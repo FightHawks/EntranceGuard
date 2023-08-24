@@ -1,0 +1,13 @@
+{
+    "files.associations": {
+        "oled.h": "c",
+        "eink.h": "c",
+        "einkfont.h": "c",
+        "font.h": "c",
+        "stdlib.h": "c",
+        "main.h": "c",
+        "acousto_optic.h": "c",
+        "loop.h": "c",
+        "key.h": "c"
+    }
+}
