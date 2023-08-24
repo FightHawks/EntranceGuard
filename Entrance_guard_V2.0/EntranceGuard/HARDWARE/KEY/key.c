@@ -1,6 +1,8 @@
 #include "key.h"
 #include "stdio.h"
 key_t key[KEY_NUM] = {0, 0, 0, 0, 0};
+key_event_t current_key = {NULL_KEY, 0};
+
 // uint32_t key_time = 0;
 static void Key_GPIO_Init(void)
 {
@@ -82,13 +84,18 @@ static void scan_key()
             {
                 key[i].key_type = KEY_SINGLE_CLICK; // 按键1单次按下
                 key[i].judge_sta = 0;               // 松开且是长按键
+                current_key.Key_Name = i;
+                current_key.Key_Type = KEY_SINGLE_CLICK;
             }
             else if (key[i].key_sta == KEY_UP_STATUS && key[i].key_time >= LONG_KEY_TIME)
                 key[i].judge_sta = 0; // 松开且是长按键
             else
             {
-                if (key[i].key_time >= LONG_KEY_TIME)
+                if (key[i].key_time >= LONG_KEY_TIME){
                     key[i].key_type = KEY_LONG_CLICK; // 长按键
+                    current_key.Key_Name = i;
+                    current_key.Key_Type = KEY_LONG_CLICK;
+                }
                 key[i].key_time++;                    // 长按键计时 还没松开
             }
             break;

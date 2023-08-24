@@ -6,7 +6,14 @@
 #include "acousto_optic.h"
 #include "stdio.h"
 #include "key.h"
+#include "menu.h"
 uint8_t uid_buff[4];
+
+void (*current_operation_index)();
+unsigned char func_index = 0; //主程序此时所在程序的索引值
+unsigned char last_index = 127;
+unsigned char last_sec = 60;
+
 void show_card()
 {
     char cStr[30];
@@ -20,13 +27,14 @@ void show_card()
 void bsp_init()
 {
     OLED_Init();
-    RC522_Init();
-    OLED_Fill_Fast(OLED_WHITE);
-    PcdReset();
+    // RC522_Init();
+    // PcdReset();
+    // /*设置工作方式*/
+    // M500PcdConfigISOType('A');
+    // PcdHalt();
     Key_Init();
-    /*设置工作方式*/
-    M500PcdConfigISOType('A');
-    PcdHalt();
+    OLED_Fill_Fast(OLED_WHITE);
+    OLED_Fill_Fast(OLED_BACK);
     printf("init finish\r\n");
     // eeprom_read_card();
     // show_card();
@@ -58,6 +66,7 @@ void stop(uint16_t xms)
     // LL_RCC_HSI_Disable();
     LL_PWR_EnableUltraLowPower();
     LL_PWR_SetRegulModeLP(LL_PWR_REGU_LPMODES_LOW_POWER);
+    //
     LL_PWR_SetPowerMode(LL_PWR_MODE_STOP);
     LL_LPM_EnableDeepSleep();
     __WFI();
@@ -67,10 +76,12 @@ void app_loop()
 {
 
     bsp_init();
+    Watch_Show();
 
     for (;;)
     {
-        key_proc();
+        // key_proc();
+        Menu_Show(current_key.Key_Name);
         // Add_Card();
         // Match_Card();
         // msSleep(500);

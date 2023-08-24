@@ -8,6 +8,8 @@
         "main.h": "c",
         "acousto_optic.h": "c",
         "loop.h": "c",
-        "key.h": "c"
+        "key.h": "c",
+        "menu.h": "c",
+        "stdio.h": "c"
     }
 }

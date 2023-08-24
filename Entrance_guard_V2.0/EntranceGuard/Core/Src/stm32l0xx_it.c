@@ -195,7 +195,10 @@ void RTC_IRQHandler(void)
     LL_RCC_SetUSARTClockSource(LL_RCC_USART2_CLKSOURCE_HSI);
     // LL_RCC_LSI_Enable();
   }
-  LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_20);
+  LL_TIM_EnableCounter(TIM2);
+  // LL_TIM_ClearFlag_UPDATE(TIM2);
+  // LL_TIM_EnableIT_UPDATE(TIM2); // 使能更新中断
+  // LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_20);
   // LL_EXTI_DisableIT_0_31(LL_EXTI_LINE_20);
   /* USER CODE END RTC_IRQn 1 */
 }
@@ -209,6 +212,7 @@ void TIM2_IRQHandler(void)
   if(LL_TIM_IsActiveFlag_UPDATE(TIM2) == SET)
   {
      ScanKeyStatus();
+      
      LL_TIM_ClearFlag_UPDATE(TIM2);
   }
  

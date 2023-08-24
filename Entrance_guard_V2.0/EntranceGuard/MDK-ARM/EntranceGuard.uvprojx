@@ -1175,6 +1175,16 @@
               <FileType>5</FileType>
               <FilePath>..\HARDWARE\OLED\OLED_Font.h</FilePath>
             </File>
+            <File>
+              <FileName>menu.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\HARDWARE\menu.c</FilePath>
+            </File>
+            <File>
+              <FileName>menu.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\HARDWARE\menu.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

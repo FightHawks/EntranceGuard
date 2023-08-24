@@ -55,7 +55,8 @@ void stop(uint16_t xms);
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
 #define msDelay(msx) LL_mDelay(msx)
-#define msSleep(msx) stop(msx)
+// #define msSleep(msx) stop(msx)
+#define msSleep(msx) LL_mDelay(msx)
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
