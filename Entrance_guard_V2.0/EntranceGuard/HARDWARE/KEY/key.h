@@ -55,6 +55,9 @@ typedef struct
   uint8_t judge_sta;
   uint8_t key_type;
   uint32_t key_time;
+  uint8_t last_key;
+  uint8_t last_type;
+  uint8_t is_callback;
 } key_t;
 
 extern key_event_t current_key;

@@ -1,11 +1,11 @@
 #ifndef __OLED_H
 #define __OLED_H
 
-#define u8 unsigned char
-#define u16 unsigned int
-#define u32 unsigned long int
 #define OLED_BACK  0x00
 #define OLED_WHITE 0xff
+#define SIZE_0806  1
+#define SIZE_1608  2
+
 void OLED_Init(void);
 void OLED_Clear(void);
 void OLED_ShowChar(u8 x,u8 y,u8 chr,u8 Char_Size);

@@ -9,10 +9,10 @@
 #include "menu.h"
 uint8_t uid_buff[4];
 
-void (*current_operation_index)();
-unsigned char func_index = 0; //主程序此时所在程序的索引值
-unsigned char last_index = 127;
-unsigned char last_sec = 60;
+// void (*current_operation_index)();
+// unsigned char func_index = 0; //主程序此时所在程序的索引值
+// unsigned char last_index = 127;
+// unsigned char last_sec = 60;
 
 void show_card()
 {
@@ -27,17 +27,17 @@ void show_card()
 void bsp_init()
 {
     OLED_Init();
-    // RC522_Init();
-    // PcdReset();
-    // /*设置工作方式*/
-    // M500PcdConfigISOType('A');
-    // PcdHalt();
+    RC522_Init();
+    PcdReset();
+    /*设置工作方式*/
+    M500PcdConfigISOType('A');
+    PcdHalt();
     Key_Init();
     OLED_Fill_Fast(OLED_WHITE);
     OLED_Fill_Fast(OLED_BACK);
     printf("init finish\r\n");
-    // eeprom_read_card();
-    // show_card();
+    eeprom_read_card();
+    show_card();
     // eeprom_delete_all();
     // Buzzer_One(300);
 }
@@ -76,14 +76,15 @@ void app_loop()
 {
 
     bsp_init();
-    Watch_Show();
+    Menu_Init();
 
     for (;;)
     {
-        // key_proc();
-        Menu_Show(current_key.Key_Name);
+        GUI_Refresh();
+        key_proc();
+        // Menu_Show(current_key.Key_Name);
         // Add_Card();
-        // Match_Card();
+        Match_Card();
         // msSleep(500);
         // Green(1000, 2);
         // Red(500, 2);
@@ -167,7 +168,9 @@ void Match_Card()
                 LL_TIM_OC_SetCompareCH1(TIM21, 2500 - 1);
                 GREEN_ON;
                 // LL_TIM_OC_SetCompareCH1(TIM21, 0);
+                OLED_ShowStr(32+0,6,(unsigned char *)"open_door",SIZE_0806);
                 msDelay(2000);
+                OLED_ShowStr(32+0,6,(unsigned char *)"         ",SIZE_0806);
                 LL_TIM_OC_SetCompareCH1(TIM21, 500 - 1);
                 msDelay(2000);
                 // LL_TIM_OC_SetCompareCH1(TIM21, 0);
@@ -178,7 +181,9 @@ void Match_Card()
             }
             else if (i == nfc_uid.len - 1)
             {
-                Red_One(500);
+               RED_ON;
+               Buzzer(200,3);
+               RED_OFF;
             }
         }
     }

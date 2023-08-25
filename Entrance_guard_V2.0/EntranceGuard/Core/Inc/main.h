@@ -91,7 +91,9 @@ void Error_Handler(void);
 #endif
 
 /* USER CODE BEGIN Private defines */
-
+#define u8 unsigned char
+#define u16 unsigned int
+#define u32 unsigned long int
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus
