@@ -27,9 +27,9 @@
 
 // #define EINK_BUSY()    HAL_GPIO_ReadPin(GPIOA,LL_GPIO_PIN_5)
 
-#define u8 unsigned char
-#define u16 unsigned int
-#define u32 unsigned long int
+// #define u8 unsigned char
+// #define u16 unsigned int
+// #define u32 unsigned long int
 
 
 #define EINK_W   200

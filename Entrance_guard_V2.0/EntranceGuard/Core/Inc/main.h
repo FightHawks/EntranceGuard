@@ -49,6 +49,30 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#define u8 unsigned char
+#define u16 unsigned int
+#define u32 unsigned long int
+
+#define ON  1
+#define OFF 0
+
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
+#define MINMAX(input, low, upper) MIN(MAX(input, low), upper)
+
+#include "stdbool.h"
+#include "stdio.h"
+#include <stdlib.h>
+#include "loop.h"
+#include "eink.h"
+#include "OLED.h"
+#include "eeprom.h"
+#include "nfc.h"
+#include "acousto_optic.h"
+#include "key.h"
+#include "menu.h"
+
+
 void stop(uint16_t xms);
 /* USER CODE END Includes */
 
@@ -91,9 +115,7 @@ void Error_Handler(void);
 #endif
 
 /* USER CODE BEGIN Private defines */
-#define u8 unsigned char
-#define u16 unsigned int
-#define u32 unsigned long int
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

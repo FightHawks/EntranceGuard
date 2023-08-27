@@ -1,9 +1,7 @@
-
 #include "eeprom.h"
-#include "acousto_optic.h"
-#include "string.h"
+// #include "acousto_optic.h"
+// #include "string.h"
 #define DELAY_TIME 10
-nfc_uid_t nfc_uid;
 
 /**
  * @brief SDA线输入模式配置
@@ -326,7 +324,12 @@ void eeprom_read_card()
   {
     for (uint8_t j = 0; j < UID_LEN; j++)
     {
-      nfc_uid.uid[i][j] = eeprom_read(DATA_ADDR + i * UID_LEN + j);
+      nfc_uid.uid[i][j] = eeprom_read(UID_ADDR + i * UID_LEN + j);
+      msSleep(5);
+    }
+    for (uint8_t j = 0; j < NAME_LEN; j++)
+    {
+      nfc_uid.name[i][j] = eeprom_read(NAME_ADDR + i * NAME_LEN + j);
       msSleep(5);
     }
   }
@@ -343,7 +346,12 @@ void eeprom_write_card()
   {
     for (uint8_t j = 0; j < UID_LEN; j++)
     {
-      eeprom_write(DATA_ADDR + i * UID_LEN + j, nfc_uid.uid[i][j]);
+      eeprom_write(UID_ADDR + i * UID_LEN + j, nfc_uid.uid[i][j]);
+      msSleep(5);
+    }
+    for (uint8_t j = 0; j < NAME_LEN; j++)
+    {
+      eeprom_write(NAME_ADDR + i * NAME_LEN + j, nfc_uid.name[i][j]);
       msSleep(5);
     }
   }
@@ -360,7 +368,7 @@ void eeprom_err_warning()
     msSleep(100);
   }
 }
-e2rom_state eeprom_add_card(uint8_t *uid)
+e2rom_state eeprom_add_card(uint8_t *uid, uint8_t *name)
 {
   nfc_uid.len++;
   if (nfc_uid.len > CARD_NUM)
@@ -373,6 +381,7 @@ e2rom_state eeprom_add_card(uint8_t *uid)
   {
     Buzzer_One(200);
     memcpy(nfc_uid.uid[nfc_uid.len - 1], uid, UID_LEN);
+    memcpy(nfc_uid.name[nfc_uid.len - 1], name, NAME_LEN);
     msSleep(200);
     eeprom_write_card();
     Buzzer_One(200);
@@ -386,9 +395,10 @@ void eeprom_delete_card_fast(uint8_t id)
   np = nfc_uid.uid[nfc_uid.len - 1];
   sp = nfc_uid.uid[id];
   memcpy(nfc_uid.uid[id], nfc_uid.uid[nfc_uid.len - 1], UID_LEN);
+  memcpy(nfc_uid.name[id], nfc_uid.name[nfc_uid.len - 1], NAME_LEN);
   msSleep(200);
-  eeprom_write_card();
   nfc_uid.len--;
+  eeprom_write_card();
   Buzzer_One(200);
 }
 void eeprom_delete_card(uint8_t *uid)
@@ -404,7 +414,7 @@ void eeprom_delete_card(uint8_t *uid)
     Buzzer_One(200);
     for (uint8_t i = 0; i < nfc_uid.len; i++)
     {
-      if (strncmp((const char*)nfc_uid.uid[i], (const char*)uid, UID_LEN) == 0)
+      if (strncmp((const char *)nfc_uid.uid[i], (const char *)uid, UID_LEN) == 0)
       {
         sp = nfc_uid.uid[i];
       }

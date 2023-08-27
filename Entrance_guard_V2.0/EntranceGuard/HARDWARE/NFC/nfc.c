@@ -17,6 +17,11 @@
  *7--RST <----->PB0
  *8--VCC <----->VCC
  ************************************/
+
+nfc_uid_t nfc_uid;
+uint8_t uid_buff[4];
+nfc_event_t NFC_Event = {0, 0, 0};
+
 /**
  * @brief I2C的短暂延时
  * @param None
@@ -232,48 +237,52 @@ u8 SPI_RC522_SendByte(u8 byte)
     //     ;
     // return LL_SPI_ReceiveData8(SPI1);
 
-
     int state = 0;
-	uint32_t timeout_cnt;
-	static const uint32_t timeout_cnt_num = 10000;
-	
-	// Wait until TXE flag is set to send data 
-	timeout_cnt = 0;
-	while(!LL_SPI_IsActiveFlag_TXE(SPI1)){
-		timeout_cnt ++;
-		if(timeout_cnt > timeout_cnt_num){
-			state = -1;
-			break;
-		}
-	}
-	
-	// Transmit data in 16 Bit mode
-	LL_SPI_TransmitData16(SPI1, byte);
-	
-	// Check BSY flag 
-	timeout_cnt = 0;
-	while(LL_SPI_IsActiveFlag_BSY(SPI1)){
-		timeout_cnt ++;
-		if(timeout_cnt > timeout_cnt_num){
-			state = -1;
-			break;
-		}
-	}
-	
-	// Check RXNE flag 
-	timeout_cnt = 0;
-	while(!LL_SPI_IsActiveFlag_RXNE(SPI1)){
-		timeout_cnt ++;
-		if(timeout_cnt > timeout_cnt_num){
-			state = -1;
-			break;
-		}
-	}
-	
-	// Read 16-Bits in the data register
-	
-	return LL_SPI_ReceiveData8(SPI1);
+    uint32_t timeout_cnt;
+    static const uint32_t timeout_cnt_num = 10000;
 
+    // Wait until TXE flag is set to send data
+    timeout_cnt = 0;
+    while (!LL_SPI_IsActiveFlag_TXE(SPI1))
+    {
+        timeout_cnt++;
+        if (timeout_cnt > timeout_cnt_num)
+        {
+            state = -1;
+            break;
+        }
+    }
+
+    // Transmit data in 16 Bit mode
+    LL_SPI_TransmitData16(SPI1, byte);
+
+    // Check BSY flag
+    timeout_cnt = 0;
+    while (LL_SPI_IsActiveFlag_BSY(SPI1))
+    {
+        timeout_cnt++;
+        if (timeout_cnt > timeout_cnt_num)
+        {
+            state = -1;
+            break;
+        }
+    }
+
+    // Check RXNE flag
+    timeout_cnt = 0;
+    while (!LL_SPI_IsActiveFlag_RXNE(SPI1))
+    {
+        timeout_cnt++;
+        if (timeout_cnt > timeout_cnt_num)
+        {
+            state = -1;
+            break;
+        }
+    }
+
+    // Read 16-Bits in the data register
+
+    return LL_SPI_ReceiveData8(SPI1);
 }
 
 /* 函数名：ReadRawRC
@@ -756,4 +765,119 @@ char PcdHalt(void)
     PcdComMF522(PCD_TRANSCEIVE, ucComMF522Buf, 4, ucComMF522Buf, &ulLen);
 
     return MI_OK;
+}
+
+addcard_state Add_Card()
+{
+    PcdAntennaOn(); // 开启天线
+    if (NFC_Search_Card_Once(uid_buff) == MI_OK)
+    {
+
+        if (nfc_uid.len == 0)
+        {
+            Buzzer_One(100);
+            eeprom_add_card(uid_buff, (u8 *)"***");
+            Buzzer_One(100);
+            return Add_Card_OK;
+        }
+
+        for (uint8_t i = 0; i < nfc_uid.len; i++)
+        {
+            if (strncmp((const char *)uid_buff, (const char *)nfc_uid.uid[i], 4) == 0)
+            {
+                Buzzer(50, 5);
+                // break;
+                return Card_Exist;
+            }
+            else if (i == nfc_uid.len - 1)
+            {
+                Buzzer_One(100);
+                eeprom_add_card(uid_buff, (u8 *)"***");
+                Buzzer_One(100);
+                return Add_Card_OK;
+            }
+        }
+        return Not_Found;
+        memset(uid_buff, 0x00, 4);
+        // Buzzer(500, 2);
+    }
+    PcdAntennaOff(); // 关闭天线
+    return Add_Card_Error;
+}
+
+uint8_t NFC_Search_Card_Once(uint8_t *ucUID)
+{
+    uint8_t ucArray_ID[4];  /*先后存放IC卡的类型和UID(IC卡序列号)*/
+    uint8_t ucStatusReturn; /*返回状态*/
+    /*寻卡*/
+    if ((ucStatusReturn = PcdRequest(PICC_REQALL, ucArray_ID)) != MI_OK)
+    {
+        ucStatusReturn = PcdRequest(PICC_REQALL, ucArray_ID); // PICC_REQALL   PICC_REQIDL
+    }
+    if (ucStatusReturn == MI_OK)
+    {
+
+        /*防冲撞（当有多张卡进入读写器操作范围时，防冲突机制会从其中选择一张进行操作）*/
+        if (PcdAnticoll(ucArray_ID) == MI_OK)
+        {
+            PcdSelect(ucArray_ID);
+            memcpy(ucUID, ucArray_ID, 4);
+            // sprintf(cStr, "The Card ID is: %02X%02X%02X%02X", ucArray_ID[0], ucArray_ID[1], ucArray_ID[2], ucArray_ID[3]);
+            // printf("%s\r\n", cStr); // 打印卡片ID
+            PcdHalt();
+            // Buzzer(500, 2);
+        }
+    }
+    return ucStatusReturn;
+}
+
+void Match_Card()
+{
+    if (NFC_Event.Delete_Card != OFF || NFC_Event.Add_Card != OFF)
+        return;
+
+    NFC_Event.Match_Card = ON;
+    PcdAntennaOn(); // 开启天线
+    if (NFC_Search_Card_Once(uid_buff) == MI_OK)
+    {
+        if (nfc_uid.len == 0)
+        {
+            RED_ON;
+            Buzzer(200, 3);
+            RED_OFF;
+            return;
+        }
+        for (uint8_t i = 0; i < nfc_uid.len; i++)
+        {
+            if (strncmp((const char *)uid_buff, (const char *)nfc_uid.uid[i], 4) == 0)
+            {
+                Buzzer(200, 1);
+                LL_TIM_CC_EnableChannel(TIM21, LL_TIM_CHANNEL_CH1);
+                LL_TIM_EnableCounter(TIM21);
+                LL_TIM_OC_SetCompareCH1(TIM21, 2500 - 1);
+                GREEN_ON;
+                // LL_TIM_OC_SetCompareCH1(TIM21, 0);
+                OLED_ShowStr(32 + 0, 6, (unsigned char *)"open_door", SIZE_0806, NORMAL);
+                msDelay(2000);
+                OLED_ShowStr(32 + 0, 6, (unsigned char *)"         ", SIZE_0806, NORMAL);
+                LL_TIM_OC_SetCompareCH1(TIM21, 500 - 1);
+                msDelay(2000);
+                // LL_TIM_OC_SetCompareCH1(TIM21, 0);
+                LL_TIM_CC_DisableChannel(TIM21, LL_TIM_CHANNEL_CH1);
+                LL_TIM_DisableCounter(TIM21);
+                GREEN_OFF;
+                Buzzer(200, 1);
+                break;
+            }
+            else if (i == nfc_uid.len - 1)
+            {
+                RED_ON;
+                Buzzer(200, 3);
+                RED_OFF;
+            }
+        }
+    }
+    memset(uid_buff, 0x00, 4);
+    PcdAntennaOff(); // 关闭天线
+    NFC_Event.Match_Card = OFF;
 }
