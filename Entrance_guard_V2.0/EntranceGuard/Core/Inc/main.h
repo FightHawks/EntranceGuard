@@ -55,7 +55,8 @@ void stop(uint16_t xms);
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
 #define msDelay(msx) LL_mDelay(msx)
-#define msSleep(msx) stop(msx)
+// #define msSleep(msx) stop(msx)
+#define msSleep(msx) LL_mDelay(msx)
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
@@ -90,7 +91,9 @@ void Error_Handler(void);
 #endif
 
 /* USER CODE BEGIN Private defines */
-
+#define u8 unsigned char
+#define u16 unsigned int
+#define u32 unsigned long int
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

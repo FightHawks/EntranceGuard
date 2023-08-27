@@ -78,7 +78,7 @@ void MX_TIM21_Init(void)
   /* USER CODE END TIM21_Init 1 */
   TIM_InitStruct.Prescaler = 15;
   TIM_InitStruct.CounterMode = LL_TIM_COUNTERMODE_UP;
-  TIM_InitStruct.Autoreload = 1999;
+  TIM_InitStruct.Autoreload = 19999;
   TIM_InitStruct.ClockDivision = LL_TIM_CLOCKDIVISION_DIV1;
   LL_TIM_Init(TIM21, &TIM_InitStruct);
   LL_TIM_DisableARRPreload(TIM21);

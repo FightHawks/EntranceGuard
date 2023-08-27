@@ -12,19 +12,20 @@
 #define DOUBLE_KEY_TIME 10
 // 上
 #define KEY_PORT_0 GPIOA
-#define KEY_PIN_0 LL_GPIO_PIN_12
+#define KEY_PIN_0 LL_GPIO_PIN_11
 // 下
 #define KEY_PORT_1 GPIOA
-#define KEY_PIN_1 LL_GPIO_PIN_10
+#define KEY_PIN_1 LL_GPIO_PIN_12
 // 左
 #define KEY_PORT_2 GPIOA
-#define KEY_PIN_2 LL_GPIO_PIN_11
+#define KEY_PIN_2 LL_GPIO_PIN_10
 // 右
 #define KEY_PORT_3 GPIOA
 #define KEY_PIN_3 LL_GPIO_PIN_8
 // 确定
 #define KEY_PORT_4 GPIOA
 #define KEY_PIN_4 LL_GPIO_PIN_15
+
 enum
 {
   KEY_NONE_CLICK = 0,
@@ -38,6 +39,7 @@ enum
   KEY_LEFT,
   KEY_RIGHT,
   KEY_IN,
+  NULL_KEY,
 };
 
 typedef struct
@@ -53,7 +55,14 @@ typedef struct
   uint8_t judge_sta;
   uint8_t key_type;
   uint32_t key_time;
+  uint8_t last_key;
+  uint8_t last_type;
+  uint8_t is_callback;
 } key_t;
+
+extern key_event_t current_key;
+
+
 void ScanKeyStatus();
 void Key_Init();
 uint8_t GetKeyStatus(uint8_t KeyNo);

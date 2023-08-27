@@ -1,6 +1,8 @@
 #include "key.h"
 #include "stdio.h"
 key_t key[KEY_NUM] = {0, 0, 0, 0, 0};
+key_event_t current_key = {NULL_KEY, 0};
+
 // uint32_t key_time = 0;
 static void Key_GPIO_Init(void)
 {
@@ -45,8 +47,13 @@ uint8_t GetKeyStatus(uint8_t KeyNo)
 uint8_t GetKeyStatusRE(uint8_t KeyNo)
 {
     uint8_t key_type = key[KeyNo].key_type;
-    key[KeyNo].key_type = KEY_NONE_CLICK;
-    return key_type;
+    if(key[KeyNo].is_callback == 0){
+        key[KeyNo].is_callback = 1; 
+        // key[KeyNo].last_type = key[KeyNo].key_type;
+        // key[KeyNo].key_type = KEY_NONE_CLICK;
+        return key_type;
+    }
+    return KEY_NONE_CLICK;
 }
 
 static void scan_key()
@@ -78,17 +85,29 @@ static void scan_key()
         }
         case 2:
         {
-            if ((key[i].key_sta == KEY_UP_STATUS) && key[i].key_time < LONG_KEY_TIME) // 等待松开过程,且非长按键
+            if ((key[i].key_sta == KEY_UP_STATUS) && key[i].key_time < LONG_KEY_TIME &&(key[i].key_type != KEY_LONG_CLICK)) // 等待松开过程,且非长按键
             {
+                key[i].last_type = key[i].key_type;
                 key[i].key_type = KEY_SINGLE_CLICK; // 按键1单次按下
+                key[i].is_callback = 0; 
+          
                 key[i].judge_sta = 0;               // 松开且是长按键
+                current_key.Key_Name = i;
+                current_key.Key_Type = KEY_SINGLE_CLICK;
             }
-            else if (key[i].key_sta == KEY_UP_STATUS && key[i].key_time >= LONG_KEY_TIME)
+            else if (key[i].key_sta == KEY_UP_STATUS && key[i].key_time >= LONG_KEY_TIME){
                 key[i].judge_sta = 0; // 松开且是长按键
+                // key[i].key_type = KEY_NONE_CLICK;
+            }
             else
             {
-                if (key[i].key_time >= LONG_KEY_TIME)
+                if (key[i].key_time >= LONG_KEY_TIME){
                     key[i].key_type = KEY_LONG_CLICK; // 长按键
+                    key[i].key_time = 0;
+                    key[i].is_callback = 0; 
+                    current_key.Key_Name = i;
+                    current_key.Key_Type = KEY_LONG_CLICK;
+                }
                 key[i].key_time++;                    // 长按键计时 还没松开
             }
             break;
@@ -153,6 +172,7 @@ __WEAK void key_right_long_click_callback()
 }
 __WEAK void key_in_long_click_callback()
 {
+    printf("long_in\r\n");
 }
 
 __WEAK void Key_Event_Callback(key_event_t *event)

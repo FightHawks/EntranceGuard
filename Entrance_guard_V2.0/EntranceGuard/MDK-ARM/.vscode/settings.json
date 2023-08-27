@@ -8,6 +8,12 @@
         "main.h": "c",
         "acousto_optic.h": "c",
         "loop.h": "c",
-        "key.h": "c"
+        "key.h": "c",
+        "menu.h": "c",
+        "stdio.h": "c",
+        "nfc.h": "c",
+        "rtc.h": "c",
+        "stm32l0xx_ll_gpio.h": "c",
+        "eeprom.h": "c"
     }
 }
