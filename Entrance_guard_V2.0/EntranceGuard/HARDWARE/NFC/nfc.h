@@ -3,6 +3,9 @@
 #include "main.h"
 #include <string.h>
 #include <stdio.h>
+#include "eeprom.h"
+#include "acousto_optic.h"
+#include "OLED.h"
 
 /*******************************
  *连线说明：
@@ -15,9 +18,9 @@
  *7--RST <----->PB0
  *8--VCC <----->VCC
  ************************************/
-#define u8 unsigned char
-#define u16 unsigned int
-#define u32 unsigned long int
+// #define u8 unsigned char
+// #define u16 unsigned int
+// #define u32 unsigned long int
 
 // MF522命令代码
 #define PCD_IDLE 0x00       // 取消当前命令
@@ -148,6 +151,25 @@
 
 #define RC522_MISO_GET() LL_GPIO_IsInputPinSet(GPIOA, LL_GPIO_PIN_6)
 
+typedef struct
+{
+  bool Match_Card;
+  bool Add_Card;
+  bool Delete_Card;
+} nfc_event_t;
+
+typedef enum 
+{
+    Add_Card_Error = 0,
+    Add_Card_OK,
+    Card_Exist,
+    Not_Found,
+    Over_Time,
+}addcard_state;
+
+extern uint8_t uid_buff[4];
+extern nfc_event_t NFC_Event;
+
 u8 SPI_RC522_SendByte(u8 byte);
 u8 ReadRawRC(u8 ucAddress);
 void WriteRawRC(u8 ucAddress, u8 ucValue);
@@ -170,4 +192,7 @@ char PcdRead(u8 ucAddr, u8 *pData);
 char PcdHalt(void);                                           // 命令卡片进入休眠状态
 void CalulateCRC(u8 *pIndata, u8 ucLen, u8 *pOutData);
 
+addcard_state Add_Card();
+uint8_t NFC_Search_Card_Once(uint8_t *ucUID);
+void Match_Card();
 #endif

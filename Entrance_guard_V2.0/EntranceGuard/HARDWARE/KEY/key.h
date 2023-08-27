@@ -35,7 +35,7 @@ enum
 enum
 {
   KEY_UP = 0,
-  KEY_DOWM,
+  KEY_DOWN,
   KEY_LEFT,
   KEY_RIGHT,
   KEY_IN,
@@ -46,6 +46,8 @@ typedef struct
 {
   uint8_t Key_Name;
   uint8_t Key_Type;
+  bool is_GuiCallback;
+  bool is_PopupCallback;
 } key_event_t;
 typedef struct
 {
@@ -56,6 +58,7 @@ typedef struct
   uint8_t key_type;
   uint32_t key_time;
   uint8_t last_key;
+  uint8_t update_schedule;
   uint8_t last_type;
   uint8_t is_callback;
 } key_t;
@@ -64,6 +67,7 @@ extern key_event_t current_key;
 
 
 void ScanKeyStatus();
+void Key_Clear_Type(uint16_t time_ms);
 void Key_Init();
 uint8_t GetKeyStatus(uint8_t KeyNo);
 void key_proc();

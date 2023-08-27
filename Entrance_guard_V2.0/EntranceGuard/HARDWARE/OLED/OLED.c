@@ -1,7 +1,4 @@
-#include "main.h"
 #include "OLED.h"
-// #include "OLED_Font.h"
-#include "font.h"
 // #include "OLED_Codetab.h"
 
 /*引脚配置*/
@@ -125,72 +122,31 @@ void OLED_Init(void)
 	OLED_I2C_Init();			//端口初始化
 	
 	OLED_WriteCommand(0xAE);	//关闭显示
-	
 	OLED_WriteCommand(0xD5);	//设置显示时钟分频比/振荡器频率
 	OLED_WriteCommand(0xf0);	//原来是80
-	
 	OLED_WriteCommand(0xA8);	//设置多路复用率
 	OLED_WriteCommand(0x3F);
-	
 	OLED_WriteCommand(0xD3);	//设置显示偏移
 	OLED_WriteCommand(0x00);
-	
 	OLED_WriteCommand(0x40);	//设置显示开始行
-	
-	OLED_WriteCommand(0xA1);	//设置左右方向，0xA1正常 0xA0左右反置
-	
-	OLED_WriteCommand(0xC8);	//设置上下方向，0xC8正常 0xC0上下反置
-
+	OLED_WriteCommand(0xA0);	//设置左右方向，0xA1正常 0xA0左右反置
+	OLED_WriteCommand(0xC0);	//设置上下方向，0xC8正常 0xC0上下反置
 	OLED_WriteCommand(0xDA);	//设置COM引脚硬件配置
 	OLED_WriteCommand(0x12);
-	
-	OLED_WriteCommand(0x81);	//设置对比度控制
-	OLED_WriteCommand(0xFF);
-
+	// OLED_WriteCommand(0x81);	//设置对比度控制
+	// OLED_WriteCommand(0xFF);
+	Set_Contrast(0xff);	//设置对比度控制
 	OLED_WriteCommand(0xD9);	//设置预充电周期
-	OLED_WriteCommand(0xff);	//原来0xF1
-
+	OLED_WriteCommand(0xf1);	//原来0xF1
 	OLED_WriteCommand(0xDB);	//设置VCOMH取消选择级别
 	OLED_WriteCommand(0x30);
-
 	OLED_WriteCommand(0xA4);	//设置整个显示打开/关闭
-
-	OLED_WriteCommand(0xA6);	//设置正常/倒转显示
-
+	// OLED_WriteCommand(0xA6);	//设置正常/倒转显示
+	Inverse_Display(OFF);
+	Set_Disp_Time(0xF0);
 	OLED_WriteCommand(0x8D);	//设置充电泵
 	OLED_WriteCommand(0x14);
-
 	OLED_WriteCommand(0xAF);	//开启显示
-		
-/* 
-	OLED_WriteCommand(0xAE); //display off
-	OLED_WriteCommand(0x20);	//Set Memory Addressing Mode	
-	OLED_WriteCommand(0x10);	//00,Horizontal Addressing Mode;01,Vertical Addressing Mode;10,Page Addressing Mode (RESET);11,Invalid
-	OLED_WriteCommand(0xb0);	//Set Page Start Address for Page Addressing Mode,0-7
-	OLED_WriteCommand(0xc8);	//Set COM Output Scan Direction
-	OLED_WriteCommand(0x00); //---set low column address
-	OLED_WriteCommand(0x10); //---set high column address
-	OLED_WriteCommand(0x40); //--set start line address
-	OLED_WriteCommand(0x81); //--set contrast control register
-	OLED_WriteCommand(0xff); //???? 0x00~0xff
-	OLED_WriteCommand(0xa1); //--set segment re-map 0 to 127
-	OLED_WriteCommand(0xa6); //--set normal display
-	OLED_WriteCommand(0xa8); //--set multiplex ratio(1 to 64)
-	OLED_WriteCommand(0x3F); //
-	OLED_WriteCommand(0xa4); //0xa4,Output follows RAM content;0xa5,Output ignores RAM content
-	OLED_WriteCommand(0xd3); //-set display offset
-	OLED_WriteCommand(0x00); //-not offset
-	OLED_WriteCommand(0xd5); //--set display clock divide ratio/oscillator frequency
-	OLED_WriteCommand(0xf0); //--set divide ratio
-	OLED_WriteCommand(0xd9); //--set pre-charge period
-	OLED_WriteCommand(0x22); //
-	OLED_WriteCommand(0xda); //--set com pins hardware configuration
-	OLED_WriteCommand(0x12);
-	OLED_WriteCommand(0xdb); //--set vcomh
-	OLED_WriteCommand(0x20); //0x20,0.77xVcc
-	OLED_WriteCommand(0x8d); //--set DC-DC enable
-	OLED_WriteCommand(0x14); //
-	OLED_WriteCommand(0xaf); //--turn on oled panel */
 	OLED_Clear();				//OLED清屏
 }
 
@@ -259,7 +215,7 @@ void OLED_Fill_Fast(unsigned char Fill_Data)
   */
 void OLED_Clear(void)
 {  
-	OLED_Fill(0x00);
+	OLED_Fill_Fast(OLED_BLACK);
 	/* uint8_t i, j;
 	for (j = 0; j < 8; j++)
 	{
@@ -274,6 +230,18 @@ void OLED_Clear(void)
 
 void OLED_ON(void)
 {
+	LL_GPIO_InitTypeDef GPIO_InitStruct;
+	/**/
+	/* GPIO Ports Clock Enable */
+	LL_IOP_GRP1_EnableClock(LL_IOP_GRP1_PERIPH_GPIOA);
+	LL_IOP_GRP1_EnableClock(LL_IOP_GRP1_PERIPH_GPIOB);
+	/*Configure GPIO pins : PA0 PA1 PA2 PA15 */
+	GPIO_InitStruct.Pin = LL_GPIO_PIN_6 | LL_GPIO_PIN_7;
+	GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
+	GPIO_InitStruct.Pull = LL_GPIO_PULL_NO;
+	GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_VERY_HIGH;
+	LL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
 	OLED_WriteCommand(0X8D);  //设置电荷泵
 	OLED_WriteCommand(0X14);  //开启电荷泵
 	OLED_WriteCommand(0XAF);  //OLED唤醒
@@ -281,9 +249,51 @@ void OLED_ON(void)
  
 void OLED_OFF(void)
 {
+	// 休眠模式下sda scl高电平功耗最低（~9uA）
+	// LL_GPIO_InitTypeDef GPIO_InitStruct;
+
 	OLED_WriteCommand(0X8D);  //设置电荷泵
 	OLED_WriteCommand(0X10);  //关闭电荷泵
 	OLED_WriteCommand(0XAE);  //OLED休眠
+
+	/**/
+	/* GPIO Ports Clock Enable */
+	// LL_IOP_GRP1_EnableClock(LL_IOP_GRP1_PERIPH_GPIOA);
+	// LL_IOP_GRP1_EnableClock(LL_IOP_GRP1_PERIPH_GPIOB);
+	/*Configure GPIO pins : PA0 PA1 PA2 PA15 */
+	// GPIO_InitStruct.Pin = LL_GPIO_PIN_6 | LL_GPIO_PIN_7;
+	// GPIO_InitStruct.Mode = LL_GPIO_MODE_OUTPUT;
+	// GPIO_InitStruct.Pull = LL_GPIO_PULL_UP;
+	// GPIO_InitStruct.Speed = LL_GPIO_SPEED_FREQ_LOW;
+	// LL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+}
+/**
+  * @brief  设置显示时间
+  * @param  hex:range(0x10h-0xF0h)
+  * @retval 无
+  */
+void Set_Disp_Time(uint8_t command)
+{
+	OLED_WriteCommand(0xD5);	//设置内部震荡器
+	OLED_WriteCommand(command);
+}
+
+/**
+  * @brief  设置显示对比度
+  * @param  hex:range(0x00h-0xFFh)
+  * @retval 无
+  */
+void Set_Contrast(uint8_t command)
+{
+	OLED_WriteCommand(0x81);
+	OLED_WriteCommand(command);
+}
+
+//颜色翻转
+void Inverse_Display(uint8_t state)
+{
+	if(state == ON) OLED_WriteCommand(0xA7);
+	else if(state == OFF) OLED_WriteCommand(0xA6);
 }
 
 /**
@@ -318,15 +328,32 @@ void OLED_ShowChar(u8 x,u8 y,u8 chr,u8 Char_Size)
 		}
 }
 
+
+//画点 
+//x:0~127
+//y:0~63
+//t:1 填充 0,清空				   
+// void OLED_DrawPoint(u8 x,u8 y,u8 t)
+// {
+// 	u8 pos,bx,temp=0;
+// 	if(x>127||y>63)return;//超出范围了.
+// 	pos=7-y/8;
+// 	bx=y%8;
+// 	temp=1<<(7-bx);
+// 	if(t)OLED_GRAM[x][pos]|=temp;
+// 	else OLED_GRAM[x][pos]&=~temp;	    
+// }
+
 /**
   * @brief  OLED显示字符串
   * @param  x 起始行位置，范围：0~127
-  * @param  Column 起始列位置，范围：1~7
+  * @param  Column 起始列位置，范围：0~7
   * @param  ch[] 要显示的字符串，范围：ASCII可见字符
   * @param  TextSize 字符大小(1:6*8 ; 2:8*16)
+  * @param  mode:1
   * @retval 无
   */
-void OLED_ShowStr(unsigned char x, unsigned char y, unsigned char ch[], unsigned char TextSize)
+void OLED_ShowStr(unsigned char x, unsigned char y, unsigned char ch[], unsigned char TextSize, bool mode)
 {
 	unsigned char c = 0,i = 0,j = 0;
 	switch(TextSize)
@@ -342,8 +369,10 @@ void OLED_ShowStr(unsigned char x, unsigned char y, unsigned char ch[], unsigned
 					y++;
 				}
 				OLED_SetPos(x,y);
-				for(i=0;i<6;i++)
-					OLED_WriteData(asc2_0806[c][i]);
+				for(i=0;i<6;i++){
+					if(mode) OLED_WriteData(asc2_0806[c][i]);
+					else if(!mode) OLED_WriteData(~asc2_0806[c][i]);
+				}
 				x += 6;
 				j++;
 			}
@@ -359,11 +388,15 @@ void OLED_ShowStr(unsigned char x, unsigned char y, unsigned char ch[], unsigned
 		// 			y++;
 		// 		}
 		// 		OLED_SetPos(x,y);
-		// 		for(i=0;i<8;i++)
-		// 			OLED_WriteData(OLED_F8X16[c*16+i]);
+		// 		for(i=0;i<8;i++){
+		// 			if(mode) OLED_WriteData(OLED_F8X16[c*16+i]);
+		// 			else if(!mode) OLED_WriteData(~OLED_F8X16[c*16+i]);
+		// 		}
 		// 		OLED_SetPos(x,y+1);
-		// 		for(i=0;i<8;i++)
-		// 			OLED_WriteData(OLED_F8X16[c*16+i+8]);
+		// 		for(i=0;i<8;i++){
+		// 			if(mode) OLED_WriteData(OLED_F8X16[c*16+i+8]);
+		// 			else if(!mode) OLED_WriteData(~OLED_F8X16[c*16+i+8]);
+		// 		}
 		// 		x += 8;
 		// 		j++;
 		// 	}
