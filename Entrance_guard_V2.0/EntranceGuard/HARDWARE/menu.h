@@ -65,7 +65,7 @@ typedef struct
 	uint16_t callback_time;
 	int32_t last_time;
 }popup_sta_t;
-
+extern u8 func_index;//当前页面索引值
 void Menu_Init(void);
 void GUI_Refresh(void);
 void Show_List(menuList_t *menuList_Table, uint8_t cur_pos, uint8_t max_item, uint8_t len);
@@ -96,7 +96,7 @@ void Popup_Callback(void);
 void Developing_Popup(u8* page_index,u8* key_val);
 void AddCard_Popup(u8* page_index,u8* key_val);
 void popup_test(u8* page_index,u8* key_val);
- 
+ void ToMain_UI();
 // extern u8 func_index;//当前页面索引值
 // extern u8 menu_last_index;//上一个界面索引值
 // extern void (*current_operation_func)(u8*,u8*);//定义一个函数指针

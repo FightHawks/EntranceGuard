@@ -833,10 +833,6 @@ uint8_t NFC_Search_Card_Once(uint8_t *ucUID)
 
 void Match_Card()
 {
-    if (NFC_Event.Delete_Card != OFF || NFC_Event.Add_Card != OFF)
-        return;
-
-    NFC_Event.Match_Card = ON;
     PcdAntennaOn(); // ¿ªÆôÌìÏß
     if (NFC_Search_Card_Once(uid_buff) == MI_OK)
     {
@@ -858,10 +854,10 @@ void Match_Card()
                 GREEN_ON;
                 // LL_TIM_OC_SetCompareCH1(TIM21, 0);
                 OLED_ShowStr(32 + 0, 6, (unsigned char *)"open_door", SIZE_0806, NORMAL);
-                msDelay(2000);
+                msSleep(2000);
                 OLED_ShowStr(32 + 0, 6, (unsigned char *)"         ", SIZE_0806, NORMAL);
                 LL_TIM_OC_SetCompareCH1(TIM21, 500 - 1);
-                msDelay(2000);
+                msSleep(2000);
                 // LL_TIM_OC_SetCompareCH1(TIM21, 0);
                 LL_TIM_CC_DisableChannel(TIM21, LL_TIM_CHANNEL_CH1);
                 LL_TIM_DisableCounter(TIM21);

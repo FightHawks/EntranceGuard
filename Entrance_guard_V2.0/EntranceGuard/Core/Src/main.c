@@ -91,7 +91,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_USART2_UART_Init();
+  // MX_USART2_UART_Init();
   MX_RTC_Init();
   MX_TIM21_Init();
   MX_TIM2_Init();
@@ -151,7 +151,7 @@ void SystemClock_Config(void)
     LL_RCC_SetRTCClockSource(LL_RCC_RTC_CLKSOURCE_LSI);
   }
   LL_RCC_EnableRTC();
-  LL_RCC_PLL_ConfigDomain_SYS(LL_RCC_PLLSOURCE_HSI, LL_RCC_PLL_MUL_4, LL_RCC_PLL_DIV_4);
+  LL_RCC_PLL_ConfigDomain_SYS(LL_RCC_PLLSOURCE_HSI, LL_RCC_PLL_MUL_3, LL_RCC_PLL_DIV_3);
   LL_RCC_PLL_Enable();
 
    /* Wait till PLL is ready */
@@ -159,7 +159,7 @@ void SystemClock_Config(void)
   {
 
   }
-  LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_1);
+  LL_RCC_SetAHBPrescaler(LL_RCC_SYSCLK_DIV_16);
   LL_RCC_SetAPB1Prescaler(LL_RCC_APB1_DIV_1);
   LL_RCC_SetAPB2Prescaler(LL_RCC_APB2_DIV_1);
   LL_RCC_SetSysClkSource(LL_RCC_SYS_CLKSOURCE_PLL);
@@ -170,9 +170,9 @@ void SystemClock_Config(void)
 
   }
 
-  LL_Init1msTick(16000000);
+  LL_Init1msTick(1000000);
 
-  LL_SetSystemCoreClock(16000000);
+  LL_SetSystemCoreClock(1000000);
   LL_RCC_SetUSARTClockSource(LL_RCC_USART2_CLKSOURCE_HSI);
 }
 

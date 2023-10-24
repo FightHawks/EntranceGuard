@@ -17,19 +17,19 @@ void Acousto_Optic_Init()
 void Buzzer_One(uint16_t inv)
 {
     LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_0);
-    msSleep(inv);
+    msStop(inv);
     LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_0);
 }
 void Green_One(uint16_t inv)
 {
     LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_3);
-    msSleep(inv);
+    msStop(inv);
     LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_3);
 }
 void Red_One(uint16_t inv)
 {
     LL_GPIO_SetOutputPin(GPIOB, LL_GPIO_PIN_4);
-    msSleep(inv);
+    msStop(inv);
     LL_GPIO_ResetOutputPin(GPIOB, LL_GPIO_PIN_4);
 }
 void Buzzer(uint16_t inv, uint8_t time)
@@ -37,7 +37,7 @@ void Buzzer(uint16_t inv, uint8_t time)
     for (uint8_t i = 0; i < time; i++)
     {
         Buzzer_One(inv/2);
-        msSleep(inv/2);
+        msStop(inv/2);
     }
 }
 void Green(uint16_t inv, uint8_t time)
@@ -45,7 +45,7 @@ void Green(uint16_t inv, uint8_t time)
     for (uint8_t i = 0; i < time; i++)
     {
         Green_One(inv/2);
-        msSleep(inv/2);
+        msStop(inv/2);
     }
 }
 void Red(uint16_t inv, uint8_t time)
@@ -53,6 +53,6 @@ void Red(uint16_t inv, uint8_t time)
     for (uint8_t i = 0; i < time; i++)
     {
         Red_One(inv/2);
-        msSleep(inv/2);
+        msStop(inv/2);
     }
 }
