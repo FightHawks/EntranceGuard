@@ -14,6 +14,8 @@
         "nfc.h": "c",
         "rtc.h": "c",
         "stm32l0xx_ll_gpio.h": "c",
-        "eeprom.h": "c"
+        "eeprom.h": "c",
+        "gpio.h": "c",
+        "tim.h": "c"
     }
 }

@@ -1,0 +1,26 @@
+{
+    "files.associations": {
+        "oled.h": "c",
+        "eink.h": "c",
+        "einkfont.h": "c",
+        "font.h": "c",
+        "stdlib.h": "c",
+        "main.h": "c",
+        "acousto_optic.h": "c",
+        "loop.h": "c",
+        "key.h": "c",
+        "menu.h": "c",
+        "stdio.h": "c",
+        "nfc.h": "c",
+        "rtc.h": "c",
+        "stm32l0xx_ll_gpio.h": "c",
+        "eeprom.h": "c",
+        "gpio.h": "c",
+        "tim.h": "c",
+        "lptim.h": "c",
+        "stm32l0xx_ll_lptim.h": "c",
+        "si522a_interface.h": "c",
+        "si522a_app.h": "c",
+        "sys.h": "c"
+    }
+}

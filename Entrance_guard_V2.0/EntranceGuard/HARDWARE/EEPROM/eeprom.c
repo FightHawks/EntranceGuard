@@ -319,18 +319,18 @@ void eeprom_read_card()
   {
     nfc_uid.len = CARD_NUM;
   };
-  msSleep(5);
+  msDelay(1);
   for (uint8_t i = 0; i < nfc_uid.len; i++)
   {
     for (uint8_t j = 0; j < UID_LEN; j++)
     {
       nfc_uid.uid[i][j] = eeprom_read(UID_ADDR + i * UID_LEN + j);
-      msSleep(5);
+      msDelay(1);
     }
     for (uint8_t j = 0; j < NAME_LEN; j++)
     {
       nfc_uid.name[i][j] = eeprom_read(NAME_ADDR + i * NAME_LEN + j);
-      msSleep(5);
+      msDelay(1);
     }
   }
 }
@@ -341,18 +341,18 @@ void eeprom_write_card()
     nfc_uid.len = CARD_NUM;
   };
   eeprom_write(LEN_ADDR, nfc_uid.len);
-  msSleep(5);
+  msDelay(1);
   for (uint8_t i = 0; i < nfc_uid.len; i++)
   {
     for (uint8_t j = 0; j < UID_LEN; j++)
     {
       eeprom_write(UID_ADDR + i * UID_LEN + j, nfc_uid.uid[i][j]);
-      msSleep(5);
+      msDelay(1);
     }
     for (uint8_t j = 0; j < NAME_LEN; j++)
     {
       eeprom_write(NAME_ADDR + i * NAME_LEN + j, nfc_uid.name[i][j]);
-      msSleep(5);
+      msDelay(1);
     }
   }
 }
@@ -362,10 +362,10 @@ void eeprom_err_warning()
   {
     BUZZER_ON;
     RED_ON;
-    msSleep(100);
+    msDelay(100);
     BUZZER_OFF;
     RED_OFF;
-    msSleep(100);
+    msDelay(100);
   }
 }
 e2rom_state eeprom_add_card(uint8_t *uid, uint8_t *name)
@@ -382,7 +382,7 @@ e2rom_state eeprom_add_card(uint8_t *uid, uint8_t *name)
     Buzzer_One(200);
     memcpy(nfc_uid.uid[nfc_uid.len - 1], uid, UID_LEN);
     memcpy(nfc_uid.name[nfc_uid.len - 1], name, NAME_LEN);
-    msSleep(200);
+    msDelay(200);
     eeprom_write_card();
     Buzzer_One(200);
     return E2ROM_OK;
@@ -396,7 +396,7 @@ void eeprom_delete_card_fast(uint8_t id)
   sp = nfc_uid.uid[id];
   memcpy(nfc_uid.uid[id], nfc_uid.uid[nfc_uid.len - 1], UID_LEN);
   memcpy(nfc_uid.name[id], nfc_uid.name[nfc_uid.len - 1], NAME_LEN);
-  msSleep(200);
+  msDelay(200);
   nfc_uid.len--;
   eeprom_write_card();
   Buzzer_One(200);
@@ -420,7 +420,7 @@ void eeprom_delete_card(uint8_t *uid)
       }
     }
     memcpy(sp, nfc_uid.uid[nfc_uid.len - 1], UID_LEN);
-    msSleep(200);
+    msDelay(200);
     eeprom_write_card();
     nfc_uid.len--;
     Buzzer_One(200);
@@ -430,7 +430,7 @@ void eeprom_delete_all()
 {
   Buzzer_One(200);
   memset(&nfc_uid, 0x00, sizeof(nfc_uid_t));
-  msSleep(200);
+  msDelay(200);
   eeprom_write_card();
   Buzzer_One(200);
 }

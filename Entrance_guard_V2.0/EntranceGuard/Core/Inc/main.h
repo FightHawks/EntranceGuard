@@ -49,6 +49,11 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "rtc.h"
+#include "tim.h"
+#include "usart.h"
+#include "gpio.h"
+
 #define u8 unsigned char
 #define u16 unsigned int
 #define u32 unsigned long int
@@ -72,7 +77,8 @@ extern "C" {
 #include "key.h"
 #include "menu.h"
 
-
+void SystemClock_Config(void);
+void sleep(uint16_t xms);
 void stop(uint16_t xms);
 /* USER CODE END Includes */
 
@@ -81,6 +87,7 @@ void stop(uint16_t xms);
 #define msDelay(msx) LL_mDelay(msx)
 // #define msSleep(msx) stop(msx)
 #define msSleep(msx) LL_mDelay(msx)
+#define msStop(msx)  stop(msx)
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
